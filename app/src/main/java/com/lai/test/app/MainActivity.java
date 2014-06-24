@@ -15,18 +15,28 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.view.View.OnClickListener;
+import org.w3c.dom.Text;
+
 import java.io.DataOutputStream;
 import java.lang.Object;
 
 
-public class MainActivity extends Activity{ //implements OnClickListener {
+public class MainActivity extends Activity { //implements OnClickListener {
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        registerReceiver(SDCardBroadcastReceiver, filter);
+        //registerReceiver(SDCardBroadcastReceiver, filter);
+        IntentFilter intentFilter = new IntentFilter(Intent.ACTION_MEDIA_MOUNTED);
+        intentFilter.addDataScheme("file");
+        registerReceiver(SDCardBroadcastReceiver, intentFilter);
+        TextView txview = (TextView) findViewById(R.id.textView);
+        txview.setText(Intent.ACTION_MEDIA_MOUNTED);
+
 
        /*// Button showme = (Button) findViewById(R.id.button);
         //showme.setOnClickListener(this);
@@ -55,6 +65,8 @@ public class MainActivity extends Activity{ //implements OnClickListener {
         return super.onOptionsItemSelected(item);
     }
 
+
+
    /* @Override
     public void onClick(View v) {
         TextView abcd = (TextView) findViewById(R.id.textView);
@@ -77,35 +89,43 @@ public class MainActivity extends Activity{ //implements OnClickListener {
         }
 
 
+    }
+    @Override
+    protected void onResume(){
+
+        super.onResume();
+
+
     }*/
 
+   private final BroadcastReceiver SDCardBroadcastReceiver = new BroadcastReceiver(){
 
-   public BroadcastReceiver SDCardBroadcastReceiver = new BroadcastReceiver()
-    {
+        public void onReceive(Context context, Intent intent) {
+           /* TextView txview = (TextView) findViewById(R.id.textView);
+            txview.setText(intent.getAction());
+            TextView txview2 = (TextView) findViewById(R.id.textView2);
+            txview2.setText("hahaha");*/
+            if (intent.getAction().equals(Intent.ACTION_MEDIA_MOUNTED)) {
 
-        @Override
-        public void onReceive(Context context, Intent intent)
-        {
-            TextView txview = (TextView) findViewById(R.id.textView);
-
-            try {
-                Process process = Runtime.getRuntime().exec("su");
-                DataOutputStream os = new DataOutputStream(process.getOutputStream());
-                os.writeBytes("am instrument -w android.support.v7.appcompat.test/android.test.InstrumentationTestRunner;");
-                os.flush();
-                os.close();
-                process.waitFor();
+                try {
+                    Process process = Runtime.getRuntime().exec("su");
+                    DataOutputStream os = new DataOutputStream(process.getOutputStream());
+                    os.writeBytes("am instrument -w android.support.v7.appcompat.test/android.test.InstrumentationTestRunner;");
+                    os.flush();
+                    os.close();
+                    process.waitFor();
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+              //  txview.setText("HEAR YE! HEAR YE! THE MEDIA HAS BEEN MOUNTED!");
             }
-
-            catch (Throwable e) {e.printStackTrace();}
-           txview.setText("HEAR YE! HEAR YE! THE MEDIA HAS BEEN MOUNTED!");
-
-           Intent i = new Intent(getApplicationContext(), Display.class);
-            startActivity(i);
         }
     };
-    IntentFilter filter = new IntentFilter();
-   // filter.addAction(Intent.ACTION_MEDIA_MOUNTED);
-   // filter.addDataScheme("file");
-   // filter.setPriority(999);
+    // IntentFilter filter = new IntentFilter();
+    // filter.addAction(Intent.ACTION_MEDIA_MOUNTED);
+    // filter.addDataScheme("file");
+    // filter.setPriority(999
 }
+
+
+

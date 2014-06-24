@@ -15,16 +15,12 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <receiver
-                android:enabled="true" android:label="SDCardMountReceiver"
-                android:exported="true"
-                android:name="com.lai.test.broadcasts.SDCardBroadcastReceiver">
+             <receiver
+                 android:name="SDCardBroadcastReceiver"
+                 android:enabled="true" >
                 <intent-filter>
-                    <action
-                        android:name="android.content.Intent.ACTION_MEDIA_MOUNTED">
-
-                    </action>
-
+                    <action android:name="android.intent.action.MEDIA_MOUNTED"/>
+                    <data android:scheme="file" />
                 </intent-filter>
              </receiver>
         </activity>
